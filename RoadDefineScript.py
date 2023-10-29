@@ -167,7 +167,7 @@ def Check_Value(state,value):
                             return [[state[0] - 1, state[1]], [state[0]-1, state[1] + 1],
                                     [state[0], state[1] +1]]
                         else:
-                            return [[state[0]-1, state[1]], [state[0]   , state[1] + 1],
+                            return [[state[0]-1, state[1]], [state[0] , state[1] + 1],
                                     [state[0] + 1, state[1] + 1]]
             case "3":
                 match str(value)[2]:
