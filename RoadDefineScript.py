@@ -186,13 +186,13 @@ def Main_Algorithm(Map):
     for i in range(num_of_rows):
         for j in range(num_of_cols):
             value = Map[i][j]
-            if (value != 0 and (i, j) not in roads):
+            if (value != 0 and [i, j] not in roads):
                 neighbours = Check_Value([i, j], value)
-                for state in neighbours:
-                    new_road   = []
+                for neighbour in neighbours:
+                    new_road  = []
                     new_road.append([i, j])
-                    previous_state = [i,j]
-                    checked_states = [state]
+                    previous_neighbour = [i,j]
+                    checked_states = [neighbour]
                     flag = True
                     while flag:
                         if(len(checked_states) == 0):
@@ -206,12 +206,12 @@ def Main_Algorithm(Map):
                                 value = 0
 
                             new_neighbours = Check_Value([checked_state[0],checked_state[1]],value)
-                            if (previous_state in new_neighbours):
-                                new_road.append(state)
-                                new_neighbours.remove(previous_state)
+                            if (previous_neighbour in new_neighbours):
+                                new_road.append(neighbour)
+                                new_neighbours.remove(previous_neighbour)
                                 checked_states = new_neighbours
 
-                                previous_state = checked_state
+                                previous_neighbour = checked_state
                             else:
                                 flag = False
                     if(len(new_road) >1 ):
