@@ -9,6 +9,8 @@ import os
 
 class ImageToBoard:
     def __init__(self, image_path, model_path, model_grid_path, folder_path, folder_path2):
+
+      
         self.image_path = image_path
         self.model_path = model_path
         self.model_grid_path = model_grid_path
@@ -28,6 +30,8 @@ class ImageToBoard:
 
         if os.path.exists(folder_path2):
             shutil.rmtree(folder_path2)
+        
+        shutil.copy2(self.image_path, 'original.jpg')
 
     def initialize_tab(self):
         self.tab[5][7]  = "1B"
@@ -88,8 +92,8 @@ class ImageToBoard:
         self.model_grid = YOLO(self.model_grid_path)
         
     def predict(self):
-        self.model.predict(self.image_path, save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
-        self.model_grid.predict(self.image_path, save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
+        self.model.predict('original.jpg', save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
+        self.model_grid.predict('original.jpg', save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
 
     def load_data(self):
         self.data = np.loadtxt('runs/detect/predict2/labels/original.txt')
@@ -417,6 +421,7 @@ class ImageToBoard:
         plt.imshow(image)
         plt.axis('off')
         plt.show()
+        plt.savefig('orignal.jpg')
         fig3 = plt.figure(figsize=(10, 8))
         plt.imshow(image4)
         plt.axis('off')
