@@ -263,22 +263,153 @@ class ImageToBoard:
         image.save('output.jpg')
         return image, data_ 
     
+    def class_id_to_name(self, class_id):
+        
+        class_dict = {
+            0: '10_0',
+            1: '10_1',
+            2: '10_2',
+            3: '10_3',
+            4: '10_4',
+            5: '10_5',
+            6: '11_0',
+            7: '11_1',
+            8: '12_0',
+            9: '12_1',
+            10: '12_2',
+            11: '12_3',
+            12: '12_4',
+            13: '12_5',
+            14: '13_0',
+            15: '13_1',
+            16: '13_2',
+            17: '13_3',
+            18: '13_4',
+            19: '13_5',
+            20: '14_0',
+            21: '14_1',
+            22: '14_2',
+            23: '14_3',
+            24: '14_4',
+            25: '14_5',
+            26: '15_0',
+            27: '15_1',
+            28: '15_2',
+            29: '15_3',
+            30: '15_4',
+            31: '15_5',
+            32: '16_0',
+            33: '17_0',
+            34: '18_0',
+            35: '19_0',
+            36: '1_0',
+            37: '1_1',
+            38: '1_2',
+            39: '1_3',
+            40: '1_4',
+            41: '1_5',
+            42: '20_0',   
+            43: '21_0',
+            44: '22_0',
+            45: '23_0',
+            46: '24_0',
+            47: '2_0',
+            48: '2_1',
+            49: '2_2',
+            50: '2_3',
+            51: '2_4',
+            52: '2_5',
+            53: '3_0',
+            54: '3_1',
+            55: '3_2',
+            56: '4_0',
+            57: '4_1',
+            58: '4_2',
+            59: '4_3',
+            60: '4_4',
+            61: '4_5',
+            62: '5_0',
+            63: '5_1',
+            64: '5_2',
+            65: '5_3',
+            66: '5_4',
+            67: '5_5',
+            68: '6_0',
+            69: '6_1',
+            70: '6_2',
+            71: '7_0',
+            72: '7_1',
+            73: '7_2',
+            74: '7_3',
+            75: '7_4',
+            76: '7_5',
+            77: '8_0',
+            78: '8_1',
+            79: '8_2',
+            80: '8_3',
+            81: '8_4',
+            82: '8_5',
+            83: '9_0',
+            84: '9_1',   
+            85: '9_2',
+            
+        }
+        class_name = class_dict[class_id] 
+        return class_name 
+
+    def repredict(self,cropped_img,class2_):
+            self.model.predict(cropped_img, save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
+            if os.path.isfile('runs/detect/predict/labels/image0.txt'):  
+                new_data = np.loadtxt('runs/detect/predict/labels/image0.txt')
+                if new_data.shape == (6,):
+                    class_, x_prop, y_prop, width_prop, height_prop, conf = new_data
+                else:
+                    max_conf = -1
+                    for data in new_data:
+                        class1_, x_prop, y_prop, width_prop, height_prop, conf = data
+                        if conf > max_conf:
+                            max_conf = conf
+                            class_ = class1_
+            else:
+                class_ = class2_
+                
+            return class_
+
     def process_data(self):
+
+
         self.data = self.delete_duplicates(self.data)
         self.data_detect = self.delete_duplicates(self.data_detect)
         image2 = Image.open(self.image_path)
         image3,grid = self.draw_rectangles(self.data,self.image_path)
+        image4 = Image.open('runs/detect/predict/original.jpg')   
 
         for i in range(self.data_detect.shape[0]):
             distances = np.sqrt(np.sum((grid[:, [1, 2]] - self.data_detect[i, [1, 2]])**2, axis=1))
             closest_index = np.argmin(distances)
             self.data_detect[i, [6, 7]] = grid[closest_index, [7, 8]]
 
+
+
         for row in self.data_detect:
             class_, x_prop, y_prop, width_prop, height_prop, conf,o,p = row
+
+            if os.path.exists('runs/detect/predict/labels/image0.txt'):
+                os.remove('runs/detect/predict/labels/image0.txt')
+            x = x_prop * image2.width
+            y = y_prop * image2.height
+            width = width_prop * image2.width
+            height = height_prop * image2.height
+            x1 = x + width/2
+            x2 = x - width/2
+            y1 = y + height/2
+            y2 = y - height/2
+            cropped_img = image2.crop((x2, y2, x1,y1))
+            #class_ = self.repredict(cropped_img,class_)
+
             o = int(o)
             p = int(p)
-            self.tab[o][p] = str(class_)
+            self.tab[o][p] = str(self.class_id_to_name(class_))
 
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
@@ -286,14 +417,19 @@ class ImageToBoard:
         plt.imshow(image)
         plt.axis('off')
         plt.show()
-        fig1 = plt.figure(figsize=(10, 8))
-        plt.imshow(image2)
+        fig3 = plt.figure(figsize=(10, 8))
+        plt.imshow(image4)
         plt.axis('off')
         plt.show()
-        fig12 = plt.figure(figsize=(10, 8))
-        plt.imshow(image3)
-        plt.axis('off')
-        plt.show()
+        #fig1 = plt.figure(figsize=(10, 8))
+        #plt.imshow(image2)
+        #plt.axis('off')
+        #plt.show()
+        #fig12 = plt.figure(figsize=(10, 8))
+        #plt.imshow(image3)
+        #plt.axis('off')
+        #plt.show()
+      
 
     def run(self):
         self.load_model()
