@@ -40,7 +40,16 @@ def Template_Map():
     Map[9][3] = "2_3"
     Map[9][4] = "2_0"
     return Map
-
+def Translate_Map(map):
+    x,y = map.shape
+    new_map = []
+    for i in range(x):
+        new_row = []
+        for j in range(y):
+            tst = map[i][j]
+            new_row.append([map[i][j],Check_Value([i,j],map[i][j])])
+        new_map.append(new_row)
+    return new_map
 def Check_Value(state,value):
     if(value <100):
         match str(value)[0]:
@@ -629,13 +638,15 @@ def Handling_Complex_Neighbours(Map,neighbour,new_road,roads,new_neighbours,run,
             ((neighValue >= 100 and neighValue < 150) or neighValue >= 160) and (new_road[-1] in new_neighbours[0] or new_road[-1] in new_neighbours[1])):
         if(new_road[-1] in new_neighbours[0]):
             new_neighbours[0].remove(new_road[-1])
+            del new_neighbours[1]
         elif(new_road[-1] in new_neighbours[1]):
             new_neighbours[1].remove(new_road[-1])
+            del new_neighbours[0]
         if(run>0):
             new_road.insert(0,neighbour)
         else:
             new_road.append(neighbour)
-            run+=1
+        run+=1
         Collecting_Road(Map, new_neighbours, new_road, roads)
 
 def Collecting_Road(Map,neighbours, new_road, roads):
@@ -664,7 +675,8 @@ def Collecting_Road(Map,neighbours, new_road, roads):
     return new_road
 def Main_Algorithm(Map):
     roads = []
-
+    test = Translate_Map(Map)
+    test2 = test[0][1]
     num_of_rows, num_of_cols = Map.shape
     for i in range(num_of_rows):
         for j in range(num_of_cols):
@@ -717,6 +729,136 @@ def Main_Algorithm(Map):
                 if(len(new_road) >1 ):
                     roads.append(new_road)
     return roads
+##Aktualnie używane są te translated
+def Main_Algorithm_Translated_Map(Map):
+    roads = []
+    num_of_rows, num_of_cols = Map.shape
+    Map = Translate_Map(Map)
+    for i in range(num_of_rows):
+        for j in range(num_of_cols):
+            value, neighbours = Map[i][j]
+            occurences = 0
+            if(value > 40):
+                for sub in roads:
+                    occurences += sub.count([i, j])
+            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)) or (value >= 100 and value <150) or value >=160:
+                new_road = []
+                new_road.append([i, j])
+                state = [i,j]
+                Collecting_Road_Translated_Map(Map,neighbours,new_road, roads,state )
+                # for neighbour in neighbours:
+                #     previous_neighbour = [i,j]
+                #     checked_states = [neighbour]
+                #     flag = True
+                #     while flag:
+                #         if(len(checked_states) == 0):
+                #             flag = False
+                #         for checked_state in checked_states:
+                #             if(checked_state in new_road):
+                #                 break
+                #             try:
+                #                 value = Map[checked_state[0],checked_state[1]]
+                #             except:
+                #                 value = 0
+                #
+                #             new_neighbours = Check_Value([checked_state[0],checked_state[1]],value)
+                #             if(neighbour not in new_road):
+                #                 if (previous_neighbour in new_neighbours):
+                #                     new_road.append(neighbour)
+                #                     new_neighbours.remove(previous_neighbour)
+                #                     checked_states = new_neighbours
+                #
+                #                     previous_neighbour = neighbour
+                #                     neighbour = checked_state
+                #                 else:
+                #                     flag = False
+                #             elif (neighbour in new_neighbours):
+                #                 new_road.append(neighbour)
+                #                 new_neighbours.remove(previous_neighbour)
+                #                 checked_states = new_neighbours
+                #
+                #                 previous_neighbour = neighbour
+                #                 neighbour = checked_state
+                #             else:
+                #                 flag = False
+
+                if(len(new_road) >1 ):
+                    roads.append(new_road)
+    return roads
+
+def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
+    for neighbour in neighbours:
+        if len(neighbour) >0 and (type(neighbour[0]) != int or type(neighbour[1]) != int):
+            Collecting_Road_Translated_Map(Map,neighbour,new_road, roads,state)
+        else:
+            neighValue, new_neighbours= Map[neighbour[0]][neighbour[1]]
+            if len(new_neighbours) >0 and  type(new_neighbours[0][0]) != int:
+                Handling_Complex_Neighbours_Translated_Map(Map,neighbour,new_road,roads,new_neighbours,neighValue,state)
+            else:
+                occurences = 0
+                if (neighValue > 40):
+                    for sub in roads:
+                        occurences += sub.count(neighbour)
+                if (neighValue <40 and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and not any(neighbour in sublist for sublist in roads)) or (((neighValue < 100 and neighValue >= 40) or (neighValue >=150 and neighValue <160)) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and occurences <2) or (((neighValue >= 100 and neighValue <150) or neighValue >=160) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours)):
+                    if(new_road[-1] in new_neighbours):
+                        new_neighbours.remove(new_road[-1])
+                        new_road.append(neighbour)
+                    elif new_road[0] in new_neighbours:
+                        new_neighbours.remove(new_road[0])
+                        new_road.insert(0, neighbour)
+                    Collecting_Road_Translated_Map(Map,new_neighbours,new_road, roads,state)
+    return new_road
+
+def Handling_Complex_Neighbours_Translated_Map(Map,neighbour,new_road,roads,new_neighbours, neighValue, state):
+    occurences =0
+    if(len(new_neighbours) == 1):
+        Additional_Translate(Map,neighbour,new_road,roads,new_neighbours[0], neighValue, state)
+        return
+    if(neighValue <40):
+        print("AAAAA")
+    if (neighValue > 40):
+        for sub in roads:
+            occurences += sub.count(neighbour)
+    if ((neighValue < 100 and neighValue >= 40) or (neighValue >= 150 and neighValue < 160)) and occurences < 2:
+        if(new_road[-1] in new_neighbours[0]):
+            new_neighbours[0].remove(new_road[-1])
+            del new_neighbours[1]
+            x,y = new_road[-1]
+            del Map[x][y][1][0]
+            new_road.append(neighbour)
+        elif (new_road[0] in new_neighbours[0] and len(new_neighbours) >1):
+            new_neighbours[0].remove(new_road[0])
+            del new_neighbours[1]
+            x, y = new_road[0]
+            del Map[x][y][1][0]
+            new_road.insert(0, neighbour)
+        elif(new_road[-1] in new_neighbours[1]):
+            new_neighbours[1].remove(new_road[-1])
+            del new_neighbours[0]
+            x, y = new_road[-1]
+            del Map[x][y][1][1]
+            new_road.append(neighbour)
+        elif (new_road[0] in new_neighbours[1]):
+            new_neighbours[1].remove(new_road[0])
+            del new_neighbours[0]
+            x, y = new_road[0]
+            del Map[x][y][1][1]
+            new_road.insert(0, neighbour)
+        Collecting_Road_Translated_Map(Map, new_neighbours, new_road, roads, state)
+def Additional_Translate(Map,neighbour,new_road,roads,new_neighbours, neighValue, state):
+    occurences = 0
+    if (neighValue > 40):
+        for sub in roads:
+            occurences += sub.count(neighbour)
+    if (neighValue <40 and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and not any(neighbour in sublist for sublist in roads)) or (((neighValue < 100 and neighValue >= 40) or (neighValue >=150 and neighValue <160)) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and occurences <2) or (((neighValue >= 100 and neighValue <150) or neighValue >=160) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours)):
+        if (new_road[-1] in new_neighbours):
+            new_neighbours.remove(new_road[-1])
+            new_road.append(neighbour)
+        elif new_road[0] in new_neighbours:
+            new_neighbours.remove(new_road[0])
+            new_road.insert(0, neighbour)
+        Collecting_Road_Translated_Map(Map, new_neighbours, new_road, roads, state)
 Map = Template_Map()
-roads = Main_Algorithm(Map)
-print(roads)
+#roads = Main_Algorithm(Map)
+new_roads = Main_Algorithm_Translated_Map(Map)
+print(new_roads)
