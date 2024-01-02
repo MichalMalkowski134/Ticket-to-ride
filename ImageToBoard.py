@@ -20,11 +20,13 @@ class ImageToBoard:
         self.rows_in_columns = [11, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11,10,11,10,11,10,11,10]
         self.rows = 11
         self.tab = [[None for _ in range(self.columns)] for _ in range(self.rows)]
+        self.tabNp = np.zeros([11,18])
         self.initialize_tab()
         self.model = None
         self.model_grid = None
         self.data = None
         self.data_detect = None
+        print(folder_path)
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
 
@@ -261,7 +263,7 @@ class ImageToBoard:
 
             # Draw the class label
             text = f'{index:.0f}'
-            font = ImageFont.truetype("fonts/Ubuntu-Regular.ttf", size=100)
+            font = ImageFont.truetype('fonts/Ubuntu-Regular.ttf', size=100)
             draw.text((x2, y2 - 10), text, fill="red",font= font)
             i += 1
         image.save('output.jpg')
@@ -381,7 +383,6 @@ class ImageToBoard:
 
     def process_data(self):
 
-
         self.data = self.delete_duplicates(self.data)
         self.data_detect = self.delete_duplicates(self.data_detect)
         image2 = Image.open(self.image_path)
@@ -414,6 +415,7 @@ class ImageToBoard:
             o = int(o)
             p = int(p)
             self.tab[o][p] = str(self.class_id_to_name(class_))
+            self.tabNp[o][p] = str(self.class_id_to_name(class_))
 
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
@@ -422,7 +424,7 @@ class ImageToBoard:
         plt.axis('off')
         plt.show()
         plt.savefig('orignal.jpg')
-        fig3 = plt.figure(figsize=(10, 8))
+
         plt.imshow(image4)
         plt.axis('off')
         plt.show()
@@ -442,5 +444,6 @@ class ImageToBoard:
         self.load_data()
         self.process_data()
         tab = self.tab
-        return tab
+        tabNp = self.tabNp
+        return tab, tabNp
     
