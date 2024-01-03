@@ -18,3 +18,5 @@ print(tabNp)
 
 new_roads = RoadDefineScript.Main_Algorithm_Translated_Map(tabNp)
 print(new_roads)
+translatedMap = image_to_board.translate_roads(new_roads)
+print(translatedMap)

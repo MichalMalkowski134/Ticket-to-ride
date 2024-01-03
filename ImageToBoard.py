@@ -7,6 +7,9 @@ import math
 import numpy as np
 import os
 
+import RoadDefineScript
+
+
 class ImageToBoard:
     def __init__(self, image_path, model_path, model_grid_path, folder_path, folder_path2):
 
@@ -89,6 +92,11 @@ class ImageToBoard:
         self.tab[3][16] = "J"
         self.tab[1][17] = "J"
 
+    def translate_roads(self,roads):
+        for i in range(len(roads)):
+            for state in roads[i]:
+                self.tab[state[0]][state[1]] = "R"+str(i)
+        return self.tab
     def load_model(self):
         self.model = YOLO(self.model_path)
         self.model_grid = YOLO(self.model_grid_path)
@@ -142,6 +150,9 @@ class ImageToBoard:
 
         if text_:
             color = "yellow"
+            if text_[0] == "R":
+                draw.polygon(points, outline=(0, 0, 0), fill='#'+str(text_[1])+'0C2C1')
+                color = "red"
             if text_ == "J":
                 draw.polygon(points, outline=(0, 0, 0),fill='blue')
                 color = "red"
@@ -416,7 +427,8 @@ class ImageToBoard:
             p = int(p)
             self.tab[o][p] = str(self.class_id_to_name(class_))
             self.tabNp[o][p] = str(self.class_id_to_name(class_))
-
+        roads = RoadDefineScript.Main_Algorithm_Translated_Map(self.tabNp)
+        self.translate_roads(roads)
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
         fig = plt.figure(figsize=(10, 8))
