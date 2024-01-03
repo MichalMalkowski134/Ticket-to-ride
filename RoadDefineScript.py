@@ -790,6 +790,8 @@ def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
     for neighbour in neighbours:
         if len(neighbour) >0 and (type(neighbour[0]) != int or type(neighbour[1]) != int):
             Collecting_Road_Translated_Map(Map,neighbour,new_road, roads,state)
+        elif neighbour[0] >= len(Map) or neighbour[1] >= len(Map[0]):
+            return
         else:
             neighValue, new_neighbours= Map[neighbour[0]][neighbour[1]]
             if len(new_neighbours) >0 and  type(new_neighbours[0][0]) != int:
