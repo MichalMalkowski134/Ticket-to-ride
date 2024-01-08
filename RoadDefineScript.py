@@ -628,107 +628,6 @@ def Check_Value(state,value):
                     return [[state[0], state[1] - 1], [state[0] - 1, state[1]], [state[0], state[1] + 1],
                             [state[0] + 1, state[1] + 1], [state[0] + 1, state[1]], [state[0] + 1, state[1] - 1]]
     return []
-def Handling_Complex_Neighbours(Map,neighbour,new_road,roads,new_neighbours,run,  neighValue):
-    occurences = 0
-    if (neighValue > 40):
-        for sub in roads:
-            occurences += sub.count(neighbour)
-    if (neighValue < 40 and (new_road[-1] in new_neighbours[0] or new_road[-1] in new_neighbours[1])and not any(neighbour in sublist for sublist in roads)) or (
-            ((neighValue < 100 and neighValue >= 40) or (neighValue >= 150 and neighValue < 160)) and (new_road[-1] in new_neighbours[0] or new_road [-1] in new_neighbours[1]) and occurences < 2) or (
-            ((neighValue >= 100 and neighValue < 150) or neighValue >= 160) and (new_road[-1] in new_neighbours[0] or new_road[-1] in new_neighbours[1])):
-        if(new_road[-1] in new_neighbours[0]):
-            new_neighbours[0].remove(new_road[-1])
-            del new_neighbours[1]
-        elif(new_road[-1] in new_neighbours[1]):
-            new_neighbours[1].remove(new_road[-1])
-            del new_neighbours[0]
-        if(run>0):
-            new_road.insert(0,neighbour)
-        else:
-            new_road.append(neighbour)
-        run+=1
-        Collecting_Road(Map, new_neighbours, new_road, roads)
-
-def Collecting_Road(Map,neighbours, new_road, roads):
-    run = 0
-    for neighbour in neighbours:
-        if len(neighbour) >0 and (type(neighbour[0]) != int or type(neighbour[1]) != int):
-            Collecting_Road(Map,neighbour,new_road, roads)
-        else:
-            neighValue = Map[neighbour[0],neighbour[1]]
-            new_neighbours = Check_Value(neighbour,neighValue)
-            if len(new_neighbours) >0 and type(new_neighbours[0][0]) != int:
-                Handling_Complex_Neighbours(Map,neighbour,new_road,roads,new_neighbours,run,neighValue)
-            else:
-                occurences = 0
-                if (neighValue > 40):
-                    for sub in roads:
-                        occurences += sub.count(neighbour)
-                if (neighValue <40 and new_road[-1] in new_neighbours and not any(neighbour in sublist for sublist in roads)) or (((neighValue < 100 and neighValue >= 40) or (neighValue >=150 and neighValue <160)) and new_road[-1] in new_neighbours and occurences <2) or (((neighValue >= 100 and neighValue <150) or neighValue >=160) and new_road[-1] in new_neighbours ) :
-                    new_neighbours.remove(new_road[-1])
-                    if (run > 0):
-                        new_road.insert(0, neighbour)
-                    else:
-                        new_road.append(neighbour)
-                    run +=1
-                    Collecting_Road(Map,new_neighbours,new_road, roads)
-    return new_road
-def Main_Algorithm(Map):
-    roads = []
-    test = Translate_Map(Map)
-    test2 = test[0][1]
-    num_of_rows, num_of_cols = Map.shape
-    for i in range(num_of_rows):
-        for j in range(num_of_cols):
-            value = Map[i][j]
-            occurences = 0
-            if(value > 40):
-                for sub in roads:
-                    occurences += sub.count([i, j])
-            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)) or (value >= 100 and value <150) or value >=160:
-                neighbours = Check_Value([i, j], value)
-                new_road = []
-                new_road.append([i, j])
-                Collecting_Road(Map,neighbours,new_road, roads)
-                # for neighbour in neighbours:
-                #     previous_neighbour = [i,j]
-                #     checked_states = [neighbour]
-                #     flag = True
-                #     while flag:
-                #         if(len(checked_states) == 0):
-                #             flag = False
-                #         for checked_state in checked_states:
-                #             if(checked_state in new_road):
-                #                 break
-                #             try:
-                #                 value = Map[checked_state[0],checked_state[1]]
-                #             except:
-                #                 value = 0
-                #
-                #             new_neighbours = Check_Value([checked_state[0],checked_state[1]],value)
-                #             if(neighbour not in new_road):
-                #                 if (previous_neighbour in new_neighbours):
-                #                     new_road.append(neighbour)
-                #                     new_neighbours.remove(previous_neighbour)
-                #                     checked_states = new_neighbours
-                #
-                #                     previous_neighbour = neighbour
-                #                     neighbour = checked_state
-                #                 else:
-                #                     flag = False
-                #             elif (neighbour in new_neighbours):
-                #                 new_road.append(neighbour)
-                #                 new_neighbours.remove(previous_neighbour)
-                #                 checked_states = new_neighbours
-                #
-                #                 previous_neighbour = neighbour
-                #                 neighbour = checked_state
-                #             else:
-                #                 flag = False
-
-                if(len(new_road) >1 ):
-                    roads.append(new_road)
-    return roads
 ##Aktualnie używane są te translated
 def Main_Algorithm_Translated_Map(Map):
     roads = []
@@ -746,41 +645,6 @@ def Main_Algorithm_Translated_Map(Map):
                 new_road.append([i, j])
                 state = [i,j]
                 Collecting_Road_Translated_Map(Map,neighbours,new_road, roads,state )
-                # for neighbour in neighbours:
-                #     previous_neighbour = [i,j]
-                #     checked_states = [neighbour]
-                #     flag = True
-                #     while flag:
-                #         if(len(checked_states) == 0):
-                #             flag = False
-                #         for checked_state in checked_states:
-                #             if(checked_state in new_road):
-                #                 break
-                #             try:
-                #                 value = Map[checked_state[0],checked_state[1]]
-                #             except:
-                #                 value = 0
-                #
-                #             new_neighbours = Check_Value([checked_state[0],checked_state[1]],value)
-                #             if(neighbour not in new_road):
-                #                 if (previous_neighbour in new_neighbours):
-                #                     new_road.append(neighbour)
-                #                     new_neighbours.remove(previous_neighbour)
-                #                     checked_states = new_neighbours
-                #
-                #                     previous_neighbour = neighbour
-                #                     neighbour = checked_state
-                #                 else:
-                #                     flag = False
-                #             elif (neighbour in new_neighbours):
-                #                 new_road.append(neighbour)
-                #                 new_neighbours.remove(previous_neighbour)
-                #                 checked_states = new_neighbours
-                #
-                #                 previous_neighbour = neighbour
-                #                 neighbour = checked_state
-                #             else:
-                #                 flag = False
 
                 if(len(new_road) >1 ):
                     roads.append(new_road)
@@ -808,7 +672,10 @@ def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
                     elif new_road[0] in new_neighbours:
                         new_neighbours.remove(new_road[0])
                         new_road.insert(0, neighbour)
-                    Collecting_Road_Translated_Map(Map,new_neighbours,new_road, roads,state)
+                    if (neighValue >= 100 and neighValue <150) or neighValue >=160:
+                        return
+                    else:
+                        Collecting_Road_Translated_Map(Map,new_neighbours,new_road, roads,state)
     return new_road
 
 def Handling_Complex_Neighbours_Translated_Map(Map,neighbour,new_road,roads,new_neighbours, neighValue, state):
@@ -860,7 +727,6 @@ def Additional_Translate(Map,neighbour,new_road,roads,new_neighbours, neighValue
             new_neighbours.remove(new_road[0])
             new_road.insert(0, neighbour)
         Collecting_Road_Translated_Map(Map, new_neighbours, new_road, roads, state)
-#Map = Template_Map()
-#roads = Main_Algorithm(Map)
-#new_roads = Main_Algorithm_Translated_Map(Map)
-#print(new_roads)
+Map = Template_Map()
+new_roads = Main_Algorithm_Translated_Map(Map)
+print(new_roads)
