@@ -640,7 +640,7 @@ def Main_Algorithm_Translated_Map(Map):
             if(value > 40):
                 for sub in roads:
                     occurences += sub.count([i, j])
-            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)):
+            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)) or (value >= 100 and value <150) or value >=160:
                 new_road = []
                 new_road.append([i, j])
                 state = [i,j]
