@@ -392,6 +392,12 @@ class ImageToBoard:
                 
             return class_
 
+    def retranslate_cities(self):
+        for i in len(self.tabNp):
+            for j in len(self.tabNp[0]):
+                if(self.tabNp[i][j] >=100 and self.tabNp[i][j] < 150) or self.tabNp[i][j] >=160:
+                    self.tab[i][j] = str(self.tabNp[i][j])
+
     def process_data(self):
 
         self.data = self.delete_duplicates(self.data)
@@ -429,6 +435,7 @@ class ImageToBoard:
             self.tabNp[o][p] = str(self.class_id_to_name(class_))
         roads = RoadDefineScript.Main_Algorithm_Translated_Map(self.tabNp)
         self.translate_roads(roads)
+        self.retranslate_cities()
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
         fig = plt.figure(figsize=(10, 8))
