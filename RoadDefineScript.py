@@ -640,17 +640,14 @@ def Main_Algorithm_Translated_Map(Map):
             if(value > 40):
                 for sub in roads:
                     occurences += sub.count([i, j])
-            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)) or (value >= 100 and value <150) or value >=160:
-                if (value >= 100 and value < 150) or value >= 160:
-                    print("")
-                else:
-                    new_road = []
-                    new_road.append([i, j])
-                    state = [i,j]
-                    Collecting_Road_Translated_Map(Map,neighbours,new_road, roads,state )
+            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)):
+                new_road = []
+                new_road.append([i, j])
+                state = [i,j]
+                Collecting_Road_Translated_Map(Map,neighbours,new_road, roads,state )
 
-                    if(len(new_road) >1 ):
-                        roads.append(new_road)
+                if(len(new_road) >1 ):
+                    roads.append(new_road)
     return roads
 
 def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
