@@ -7,14 +7,16 @@ import RoadDefineScript
 import numpy as np
 
 class PhotoProcessingApp(QWidget):
+
     def __init__(self):
         super().__init__()
 
         self.init_ui()
+        self.image_path = None
 
     def init_ui(self):
         # Interfejs użytkownika
-        self.setWindowTitle('Photo Processing App')
+        self.setWindowTitle('Age Of Steam Analyzer')
         self.setGeometry(100, 100, 800, 400)
 
         self.image_label = QLabel(self)
@@ -65,23 +67,22 @@ class PhotoProcessingApp(QWidget):
         file_dialog.setNameFilter('Images (*.png *.jpg *.bmp *.gif);;All Files (*)')
 
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
-            file_name = file_dialog.selectedFiles()[0]
+            self.image_path = file_dialog.selectedFiles()[0]
 
-            if file_name:
-                pixmap = QPixmap(file_name)
+            if self.image_path:
+                pixmap = QPixmap(self.image_path)
                 scaled_pixmap = pixmap.scaledToHeight(400)
                 self.image = scaled_pixmap.toImage()
                 self.image_label.setPixmap(scaled_pixmap)
 
     def process_image(self):
         if self.image is not None:
-            image_path = 'dataset/age_of_steam/board/original3.jpg'
             model_path = 'Roboflow_model/best.pt'
             model_grid_path = 'Roboflow_model/best_grid.pt'
             folder_path = 'runs/detect/predict'
             folder_path2 = 'runs/detect/predict2'
 
-            image_to_board = ImageToBoard.ImageToBoard(image_path, model_path, model_grid_path, folder_path, folder_path2)
+            image_to_board = ImageToBoard.ImageToBoard(self.image_path, model_path, model_grid_path, folder_path, folder_path2)
             tab , tabNp = image_to_board.run()
 
             processed_pixmap = QPixmap("board.png")
