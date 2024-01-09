@@ -666,15 +666,15 @@ def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
                     for sub in roads:
                         occurences += sub.count(neighbour)
                 if (neighValue <40 and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and not any(neighbour in sublist for sublist in roads)) or (((neighValue < 100 and neighValue >= 40) or (neighValue >=150 and neighValue <160)) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and occurences <2) or (((neighValue >= 100 and neighValue <150) or neighValue >=160) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours)):
-                    if(new_road[-1] in new_neighbours):
-                        new_neighbours.remove(new_road[-1])
-                        new_road.append(neighbour)
-                    elif new_road[0] in new_neighbours:
-                        new_neighbours.remove(new_road[0])
-                        new_road.insert(0, neighbour)
                     if (neighValue >= 100 and neighValue <150) or neighValue >=160:
                         return
                     else:
+                        if(new_road[-1] in new_neighbours):
+                            new_neighbours.remove(new_road[-1])
+                            new_road.append(neighbour)
+                        elif new_road[0] in new_neighbours:
+                            new_neighbours.remove(new_road[0])
+                            new_road.insert(0, neighbour)
                         Collecting_Road_Translated_Map(Map,new_neighbours,new_road, roads,state)
     return new_road
 
