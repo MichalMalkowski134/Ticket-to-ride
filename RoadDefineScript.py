@@ -640,7 +640,7 @@ def Main_Algorithm_Translated_Map(Map):
             if(value > 40):
                 for sub in roads:
                     occurences += sub.count([i, j])
-            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)) or (value >= 100 and value <150) or value >=160:
+            if ((value != 0 and value < 40 and not any([i, j] in sublist for sublist in roads)) or (((value < 100 and value >= 40) or (value >=150 and value <160))and occurences <2)):
                 new_road = []
                 new_road.append([i, j])
                 state = [i,j]
@@ -720,6 +720,8 @@ def Additional_Translate(Map,neighbour,new_road,roads,new_neighbours, neighValue
         for sub in roads:
             occurences += sub.count(neighbour)
     if (neighValue <40 and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and not any(neighbour in sublist for sublist in roads)) or (((neighValue < 100 and neighValue >= 40) or (neighValue >=150 and neighValue <160)) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours) and occurences <2) or (((neighValue >= 100 and neighValue <150) or neighValue >=160) and (new_road[-1] in new_neighbours or new_road[0] in new_neighbours)):
+        if (neighValue >= 100 and neighValue < 150) or neighValue >= 160:
+            return
         if (new_road[-1] in new_neighbours):
             new_neighbours.remove(new_road[-1])
             new_road.append(neighbour)
