@@ -646,8 +646,7 @@ def Main_Algorithm_Translated_Map(Map):
                 state = [i,j]
                 Collecting_Road_Translated_Map(Map,neighbours,new_road, roads,state )
 
-                if(len(new_road) >1 ):
-                    roads.append(new_road)
+                roads.append(new_road)
     return roads
 
 def Collecting_Road_Translated_Map(Map,neighbours, new_road, roads, state):
