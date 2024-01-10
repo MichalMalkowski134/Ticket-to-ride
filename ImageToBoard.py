@@ -184,7 +184,7 @@ class ImageToBoard:
                 color = "red"
             if text_ == "red":
                 draw.polygon(points, outline=(0, 0, 0), fill='red')
-                color = "red"
+                color = "blue"
             if text_ == "yellow":
                 draw.polygon(points, outline=(0, 0, 0), fill='gold')
                 color = "red"
@@ -197,7 +197,7 @@ class ImageToBoard:
             if text_ == "M":
                 draw.polygon(points, outline=(0, 0, 0),fill='gray')
                 color = "red"
-            if text_ == "1B" or text_ == "2B" or text_ == "3B" or text_ == "4B" or text_ == "5B" or text_ == "6B" or text_ == "1C" or text_ == "2C" or text_ == "3C" or text_== "4C" or text_ == "5C" or text_ == "6C":
+            if text_ == "1B" or text_ == "16_0" or text_ == "17_0" or text_ == "18_0" or text_ == "19_0" or text_ == "20_0" or text_ == "21_0" or text_ == "22_0" or text_ == "23_0" or text_ == "2B" or text_ == "3B" or text_ == "4B" or text_ == "5B" or text_ == "6B" or text_ == "1C" or text_ == "2C" or text_ == "3C" or text_== "4C" or text_ == "5C" or text_ == "6C":
                 draw.polygon(points, outline=(0, 0, 0),fill='yellow')
                 color = "red"
             center_x = x_
