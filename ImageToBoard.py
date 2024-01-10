@@ -33,7 +33,7 @@ class ImageToBoard:
         self.data_detect = None
         self.markup_detect = None
         self.roads_name = None
-        self.roads_name_translated = ['black', 'blue', 'green', 'purple', 'red', '-', 'yellow']
+        self.roads_name_translated = ['black', 'blue', 'green', 'purple', 'red', '-', 'yellow', 'R']
         print(folder_path)
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
@@ -101,8 +101,6 @@ class ImageToBoard:
         self.tab[1][17] = "J"
 
     def translate_roads(self,roads):
-        print('=========')
-        print(self.roads_name)
         for i in range(len(roads)):
             for state in roads[i]:
                 if i < len(self.roads_name):
@@ -472,7 +470,9 @@ class ImageToBoard:
             self.tabNp[o][p] = str(self.class_id_to_name(class_))
         roads = RoadDefineScript.Main_Algorithm_Translated_Map(self.tabNp)
         self.roads_name = []
+        
         for road in roads:
+            check = False
             for coords in road:
                 for row in self.markup_detect:
                     class_, x_prop, y_prop, width_prop, height_prop, conf,o,p = row
@@ -480,6 +480,10 @@ class ImageToBoard:
                     p = int(p)
                     if coords == [o,p]:
                         self.roads_name.append(class_)
+                        check = True
+            if check == False:
+                self.roads_name.append(len(self.roads_name_translated)-1)
+
 
         self.translate_roads(roads)
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
