@@ -79,10 +79,12 @@ class PhotoProcessingApp(QWidget):
         if self.image is not None:
             model_path = 'Roboflow_model/best.pt'
             model_grid_path = 'Roboflow_model/best_grid.pt'
+            model_markup_path = 'Roboflow_model/best_markups.pt'
             folder_path = 'runs/detect/predict'
             folder_path2 = 'runs/detect/predict2'
+            folder_path3 = 'runs/detect/predict3'
 
-            image_to_board = ImageToBoard.ImageToBoard(self.image_path, model_path, model_grid_path, folder_path, folder_path2)
+            image_to_board = ImageToBoard.ImageToBoard(self.image_path, model_path, model_grid_path, model_markup_path, folder_path, folder_path2, folder_path3)
             tab , tabNp = image_to_board.run()
 
             processed_pixmap = QPixmap("board.png")

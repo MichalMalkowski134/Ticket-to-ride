@@ -40,6 +40,9 @@ class ImageToBoard:
 
         if os.path.exists(folder_path2):
             shutil.rmtree(folder_path2)
+
+        if os.path.exists(folder_path3):
+            shutil.rmtree(folder_path3)
         
         shutil.copy2(self.image_path, 'original.jpg')
 
@@ -98,11 +101,14 @@ class ImageToBoard:
         self.tab[1][17] = "J"
 
     def translate_roads(self,roads):
-        ind = 0
+        print('=========')
+        print(self.roads_name)
         for i in range(len(roads)):
             for state in roads[i]:
-                self.tab[state[0]][state[1]] = self.roads_name_translated[int(self.roads_name[ind])]
-            ind+=1
+                if i < len(self.roads_name):
+                    self.tab[state[0]][state[1]] = self.roads_name_translated[int(self.roads_name[i])]
+                else:
+                    self.tab[state[0]][state[1]] = "R"
         return self.tab
     def load_model(self):
         self.model = YOLO(self.model_path)
@@ -164,8 +170,27 @@ class ImageToBoard:
 
         if text_:
             color = "yellow"
-            if text_[0] == "R":
-                draw.polygon(points, outline=(0, 0, 0), fill='#'+str(text_[1])+'0C2C1')
+            ['black', 'blue', 'green', 'purple', 'red', '-', 'yellow']
+            if text_ == "black":
+                draw.polygon(points, outline=(0, 0, 0), fill='black')
+                color = "red"
+            if text_ == "blue":
+                draw.polygon(points, outline=(0, 0, 0), fill='mediumblue')
+                color = "red"
+            if text_ == "green":
+                draw.polygon(points, outline=(0, 0, 0), fill='limegreen')
+                color = "red"
+            if text_ == "purple":
+                draw.polygon(points, outline=(0, 0, 0), fill='purple')
+                color = "red"
+            if text_ == "red":
+                draw.polygon(points, outline=(0, 0, 0), fill='red')
+                color = "red"
+            if text_ == "yellow":
+                draw.polygon(points, outline=(0, 0, 0), fill='gold')
+                color = "red"
+            if text_ == "R":
+                draw.polygon(points, outline=(0, 0, 0), fill='silver')
                 color = "red"
             if text_ == "J":
                 draw.polygon(points, outline=(0, 0, 0),fill='blue')
