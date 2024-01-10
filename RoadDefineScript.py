@@ -704,7 +704,8 @@ def Handling_Complex_Neighbours_Translated_Map(Map,neighbour,new_road,roads,new_
             new_neighbours[1].remove(new_road[-1])
             del new_neighbours[0]
             x, y = new_road[-1]
-            del Map[x][y][1][1]
+            if len(Map[x][y][1]) >= 2:
+                del Map[x][y][1][1]
             new_road.append(neighbour)
         elif (new_road[0] in new_neighbours[1]):
             new_neighbours[1].remove(new_road[0])
