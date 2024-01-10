@@ -11,14 +11,16 @@ import RoadDefineScript
 
 
 class ImageToBoard:
-    def __init__(self, image_path, model_path, model_grid_path, folder_path, folder_path2):
+    def __init__(self, image_path, model_path, model_grid_path, model_markup_path, folder_path, folder_path2, folder_path3):
 
       
         self.image_path = image_path
         self.model_path = model_path
         self.model_grid_path = model_grid_path
+        self.model_markup_path = model_markup_path
         self.folder_path = folder_path
         self.folder_path2 = folder_path2
+        self.folder_path3 = folder_path3
         self.columns = 18
         self.rows_in_columns = [11, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11,10,11,10,11,10,11,10]
         self.rows = 11
@@ -29,6 +31,9 @@ class ImageToBoard:
         self.model_grid = None
         self.data = None
         self.data_detect = None
+        self.markup_detect = None
+        self.roads_name = None
+        self.roads_name_translated = ['black', 'blue', 'green', 'purple', 'red', '-', 'yellow']
         print(folder_path)
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
@@ -93,25 +98,34 @@ class ImageToBoard:
         self.tab[1][17] = "J"
 
     def translate_roads(self,roads):
+        ind = 0
         for i in range(len(roads)):
             for state in roads[i]:
-                self.tab[state[0]][state[1]] = "R"+str(i)
+                self.tab[state[0]][state[1]] = self.roads_name_translated[int(self.roads_name[ind])]
+            ind+=1
         return self.tab
     def load_model(self):
         self.model = YOLO(self.model_path)
         self.model_grid = YOLO(self.model_grid_path)
+        self.model_markup = YOLO(self.model_markup_path)
         
     def predict(self):
         self.model.predict('original.jpg', save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
         self.model_grid.predict('original.jpg', save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
+        self.model_markup.predict('original.jpg', save=True, imgsz=640, conf=0.25,save_txt=True, save_conf=True)
 
     def load_data(self):
         self.data = np.loadtxt('runs/detect/predict2/labels/original.txt')
         self.data_detect = np.loadtxt('runs/detect/predict/labels/original.txt')
+        self.markup_detect = np.loadtxt('runs/detect/predict3/labels/original.txt')
         row_numbers1 = np.arange(1, self.data_detect.shape[0] + 1)
         row_numbers2 = np.arange(1, self.data_detect.shape[0] + 1)
+        row_numbers3 = np.arange(1, self.markup_detect.shape[0] + 1)
+        row_numbers4 = np.arange(1, self.markup_detect.shape[0] + 1)
         self.data_detect = np.column_stack((self.data_detect, row_numbers1))
         self.data_detect = np.column_stack((self.data_detect, row_numbers2))
+        self.markup_detect = np.column_stack((self.markup_detect, row_numbers3))
+        self.markup_detect = np.column_stack((self.markup_detect, row_numbers4))
 
     def delete_duplicates(self, data_):
         # sortujemy dane po wierszach
@@ -396,16 +410,20 @@ class ImageToBoard:
 
         self.data = self.delete_duplicates(self.data)
         self.data_detect = self.delete_duplicates(self.data_detect)
+        self.markup_detect = self.delete_duplicates(self.markup_detect)
         image2 = Image.open(self.image_path)
         image3,grid = self.draw_rectangles(self.data,self.image_path)
-        image4 = Image.open('runs/detect/predict/original.jpg')   
+        image4 = Image.open('runs/detect/predict/original.jpg')
 
         for i in range(self.data_detect.shape[0]):
             distances = np.sqrt(np.sum((grid[:, [1, 2]] - self.data_detect[i, [1, 2]])**2, axis=1))
             closest_index = np.argmin(distances)
             self.data_detect[i, [6, 7]] = grid[closest_index, [7, 8]]
 
-
+        for i in range(self.markup_detect.shape[0]):
+            distances = np.sqrt(np.sum((grid[:, [1, 2]] - self.markup_detect[i, [1, 2]])**2, axis=1))
+            closest_index = np.argmin(distances)
+            self.markup_detect[i, [6, 7]] = grid[closest_index, [7, 8]]
 
         for row in self.data_detect:
             class_, x_prop, y_prop, width_prop, height_prop, conf,o,p = row
@@ -428,6 +446,16 @@ class ImageToBoard:
             self.tab[o][p] = str(self.class_id_to_name(class_))
             self.tabNp[o][p] = str(self.class_id_to_name(class_))
         roads = RoadDefineScript.Main_Algorithm_Translated_Map(self.tabNp)
+        self.roads_name = []
+        for road in roads:
+            for coords in road:
+                for row in self.markup_detect:
+                    class_, x_prop, y_prop, width_prop, height_prop, conf,o,p = row
+                    o = int(o)
+                    p = int(p)
+                    if coords == [o,p]:
+                        self.roads_name.append(class_)
+
         self.translate_roads(roads)
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
