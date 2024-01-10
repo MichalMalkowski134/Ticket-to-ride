@@ -34,6 +34,7 @@ class ImageToBoard:
         self.markup_detect = None
         self.roads_name = None
         self.roads_name_translated = ['black', 'blue', 'green', 'purple', 'red', '-', 'yellow', 'R']
+        self.result = [0,0,0,0,0,0,0,0]
         print(folder_path)
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
@@ -480,6 +481,7 @@ class ImageToBoard:
                     p = int(p)
                     if coords == [o,p]:
                         self.roads_name.append(class_)
+                        self.result[int(class_)] += len(road)
                         check = True
             if check == False:
                 self.roads_name.append(len(self.roads_name_translated)-1)
@@ -488,15 +490,15 @@ class ImageToBoard:
         self.translate_roads(roads)
         image = self.draw_board(self.columns, self.rows_in_columns, self.tab)
 
-        fig = plt.figure(figsize=(10, 8))
-        plt.imshow(image)
-        plt.axis('off')
-        plt.show()
-        plt.savefig('orignal.jpg')
+        # fig = plt.figure(figsize=(10, 8))
+        # plt.imshow(image)
+        # plt.axis('off')
+        # plt.show()
+        # plt.savefig('orignal.jpg')
 
-        plt.imshow(image4)
-        plt.axis('off')
-        plt.show()
+        # plt.imshow(image4)
+        # plt.axis('off')
+        # plt.show()
         #fig1 = plt.figure(figsize=(10, 8))
         #plt.imshow(image2)
         #plt.axis('off')
@@ -514,5 +516,5 @@ class ImageToBoard:
         self.process_data()
         tab = self.tab
         tabNp = self.tabNp
-        return tab, tabNp
+        return tab, tabNp, self.result
     

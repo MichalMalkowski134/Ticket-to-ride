@@ -33,16 +33,11 @@ class PhotoProcessingApp(QWidget):
         self.side_panel = QVBoxLayout()
 
         # Dodaj dodatkowy QHBoxLayout do ułożenia kolorów poziomo
-        colors_layout = QHBoxLayout()
-
+        self.colors_layout = QHBoxLayout()
         self.colors_labels = {}
-        for color_name in ['Purple', 'Yellow', 'Red', 'Black', 'Green', 'Blue']:
-            color_label = QLabel(f'Gracz {color_name}: 0', self)
-            self.colors_labels[color_name] = color_label
-            colors_layout.addWidget(color_label)
 
         # Dodaj colors_layout do side_panel
-        self.side_panel.addLayout(colors_layout)
+        self.side_panel.addLayout(self.colors_layout)
 
         # Główny layout z panelem bocznym
         main_layout = QVBoxLayout()
@@ -76,6 +71,7 @@ class PhotoProcessingApp(QWidget):
                 self.image_label.setPixmap(scaled_pixmap)
 
     def process_image(self):
+
         if self.image is not None:
             model_path = 'Roboflow_model/best.pt'
             model_grid_path = 'Roboflow_model/best_grid.pt'
@@ -85,14 +81,24 @@ class PhotoProcessingApp(QWidget):
             folder_path3 = 'runs/detect/predict3'
 
             image_to_board = ImageToBoard.ImageToBoard(self.image_path, model_path, model_grid_path, model_markup_path, folder_path, folder_path2, folder_path3)
-            tab , tabNp = image_to_board.run()
+            tab , tabNp, result = image_to_board.run()
+
+            self.update_side_panel(result)
 
             processed_pixmap = QPixmap("board.png")
             self.image_label.setPixmap(processed_pixmap)
 
-    def update_side_panel(self):
-        color_name = self.get_color_name()
-        self.color_label.setText(f'Kolor: {color_name}')
+    def update_side_panel(self, result):
+        for i in reversed(range(self.colors_layout.count())): 
+            self.colors_layout.itemAt(i).widget().setParent(None)
+        counter = 0
+        for color_name in ['black', 'blue', 'green', 'purple', 'red', 'yellow']:
+            if color_name == 'yellow':
+                counter += 1
+            color_label = QLabel(f'Gracz {color_name}: {result[counter]}', self)
+            self.colors_labels[color_name] = color_label
+            self.colors_layout.addWidget(color_label)
+            counter += 1
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
